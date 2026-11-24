@@ -6,6 +6,25 @@ O app lê e grava pela biblioteca `hidapi`, sem ferramenta externa.
 
 ## Instalação
 
+Baixe os arquivos na página [Releases](https://github.com/fajzanetti/Mini-KeyBoard/releases).
+
+### Ubuntu e Debian
+
+O pacote instala as dependências, o ícone no menu e a regra `udev`:
+
+```sh
+sudo apt install ./mini-keyboard_*_all.deb
+```
+
+O pacote exige a libadwaita 1.5 ou mais nova (Ubuntu 24.04 ou mais novo).
+
+### Windows
+
+Abra o `MiniKeyboard.exe`. O Windows não precisa de driver.
+O executável não tem assinatura digital, por isso o Windows pode mostrar um aviso na primeira vez.
+
+### A partir do código (Linux)
+
 1. Instale as dependências:
 
    ```sh
@@ -20,11 +39,13 @@ O app lê e grava pela biblioteca `hidapi`, sem ferramenta externa.
    sudo udevadm trigger --subsystem-match=usb --subsystem-match=hidraw
    ```
 
-## Uso
+3. Rode o app:
 
-```sh
-python3 -m mini_keyboard
-```
+   ```sh
+   python3 -m mini_keyboard
+   ```
+
+## Uso
 
 O app lê o mapeamento gravado no mini teclado quando abre.
 O botão **Ler do teclado** repete a leitura.
@@ -35,8 +56,26 @@ O botão **Ler do teclado** repete a leitura.
 4. Escolha o modo e a cor do LED da camada.
 5. Clique em **Gravar no teclado**.
 
-O app salva o mapeamento em `~/.config/mini-keyboard/mapping.yaml`.
+O app salva o mapeamento em `~/.config/mini-keyboard/mapping.yaml` no Linux e em `%LOCALAPPDATA%\mini-keyboard\mapping.yaml` no Windows.
 O app mostra o mapeamento salvo quando a leitura falha.
+
+## Build
+
+O workflow [build.yml](.github/workflows/build.yml) gera o `MiniKeyboard.exe` e o pacote `.deb` em cada push na `main`.
+Baixe os arquivos em **Actions**, na execução do workflow, em **Artifacts**.
+
+Uma tag `v*` publica os dois arquivos em uma release:
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Para gerar o pacote `.deb` na sua máquina:
+
+```sh
+packaging/build-deb.sh 1.0.0
+```
 
 ## Limites
 

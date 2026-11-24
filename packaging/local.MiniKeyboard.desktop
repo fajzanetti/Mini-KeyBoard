@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Mini Keyboard
+Comment=Configura o mini teclado CH57x
+Exec=mini-keyboard
+Icon=local.MiniKeyboard
+Terminal=false
+Categories=Settings;HardwareSettings;
+StartupWMClass=local.MiniKeyboard

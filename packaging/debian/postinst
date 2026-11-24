@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+# A regra udev nova só vale para um teclado já conectado depois deste recarregamento.
+if [ "$1" = configure ] && command -v udevadm >/dev/null; then
+    udevadm control --reload || true
+    udevadm trigger --subsystem-match=usb --subsystem-match=hidraw || true
+fi

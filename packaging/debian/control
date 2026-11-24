@@ -1,0 +1,11 @@
+Package: mini-keyboard
+Version: @VERSION@
+Section: utils
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.9), python3-gi, python3-yaml, gir1.2-gtk-4.0, gir1.2-adw-1 (>= 1.5), libhidapi-hidraw0
+Maintainer: fajzanetti <fajzanetti@users.noreply.github.com>
+Homepage: https://github.com/fajzanetti/Mini-KeyBoard
+Description: Configurador do mini teclado CH57x
+ Lê e grava as teclas, os knobs e o modo de LED dos mini teclados
+ CH57x (USB 1189:8840 e 1189:8842).
