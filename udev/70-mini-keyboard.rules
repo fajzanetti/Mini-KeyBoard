@@ -1,0 +1,5 @@
+# Libera o acesso ao mini teclado CH57x (1189:8840 e 1189:8842) para o usuário da sessão.
+# O ch57x-keyboard-tool grava pelo nó USB.
+SUBSYSTEM=="usb", ATTR{idVendor}=="1189", ATTR{idProduct}=="8840|8842", TAG+="uaccess"
+# O app lê o mapeamento gravado pelo nó hidraw.
+KERNEL=="hidraw*", ATTRS{idVendor}=="1189", ATTRS{idProduct}=="8840|8842", TAG+="uaccess"
