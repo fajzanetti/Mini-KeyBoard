@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gtk4
+            mingw-w64-ucrt-x86_64-libadwaita
+            mingw-w64-ucrt-x86_64-adwaita-icon-theme
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-python-gobject
+            mingw-w64-ucrt-x86_64-python-yaml
+            mingw-w64-ucrt-x86_64-hidapi
+            mingw-w64-ucrt-x86_64-pyinstaller
+
+      # A máquina do GitHub não tem o mini teclado. A busca precisa terminar sem erro e sem achar nada.
+      - name: Verifica a hidapi
+        run: python -c "from mini_keyboard import device, hid; print(hid.find_path(device.VENDOR_ID, device.PRODUCT_IDS, device.VENDOR_USAGE_PAGE))"
+
+      - name: Gera o executável
+        run: pyinstaller --noconfirm packaging/mini-keyboard.spec
+
+      # O executável não tem console. O app ainda aberto depois de 30 segundos indica que ele iniciou.
+      - name: Verifica a inicialização
+        run: |
+          ./dist/MiniKeyboard.exe &
+          sleep 30
+          kill -0 $!
+          taskkill //F //T //IM MiniKeyboard.exe
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: MiniKeyboard-windows
+          path: dist/MiniKeyboard.exe
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: MiniKeyboard-windows
+      - name: Publica a release
+        run: gh release create "$GITHUB_REF_NAME" MiniKeyboard.exe --repo "$GITHUB_REPOSITORY" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,6 +1,7 @@
 """Acesso HID pela biblioteca hidapi, com o mesmo código no Linux e no Windows."""
 
 import ctypes
+import os
 import sys
 
 LIBRARY_NAMES = {"linux": "libhidapi-hidraw.so.0", "win32": "libhidapi-0.dll"}
@@ -30,9 +31,16 @@ _DeviceInfo._fields_ = [
 ]
 
 
+def _library_path():
+    name = LIBRARY_NAMES[sys.platform]
+    # O executável do PyInstaller extrai as bibliotecas embutidas para esta pasta.
+    bundled = os.path.join(getattr(sys, "_MEIPASS", ""), name)
+    return bundled if os.path.exists(bundled) else name
+
+
 def _load():
     try:
-        library = ctypes.CDLL(LIBRARY_NAMES[sys.platform])
+        library = ctypes.CDLL(_library_path())
     except (KeyError, OSError) as error:
         raise HidError("O app não encontrou a biblioteca hidapi.") from error
     library.hid_enumerate.restype = ctypes.POINTER(_DeviceInfo)
